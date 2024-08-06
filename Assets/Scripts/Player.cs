@@ -39,9 +39,6 @@ public class Player : NetworkBehaviour
             inputReader.ShootEvent += SpawnRPC;
             inputReader.SendEvent += OnSend;
         }
-
-
-
     }
 
     //private void LateUpdate()
@@ -68,9 +65,9 @@ public class Player : NetworkBehaviour
     
     private void Update()
     {
-        if(IsServer)
+        if (IsServer)
         {
-            transform.position += (Vector3)moveInput.Value * 3 * Time.deltaTime;
+            transform.position += (Vector3)moveInput.Value * 3 * Time.deltaTime; //not sure if deltaTime can differ between client and server and if that has an effect on latency.
         }
     }
 
