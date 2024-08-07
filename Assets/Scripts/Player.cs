@@ -25,10 +25,17 @@ public class Player : NetworkBehaviour
 
     private Camera mainCamera;
 
+    NetworkVariable<float> health = new NetworkVariable<float>();
     private void Awake()
     {
+        health.OnValueChanged += NotifyUI;
         rb2d = GetComponent<Rigidbody2D>();
         mainCamera = Camera.main;
+    }
+
+    private void NotifyUI(float previousValue, float newValue)
+    {
+        
     }
 
     private void Start()
