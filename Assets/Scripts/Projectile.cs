@@ -29,14 +29,14 @@ public class Projectile : NetworkBehaviour
     //[Rpc(SendTo.Server)]
     private void DestroyProjectile()
     {
-        GetComponent<NetworkObject>().Despawn();
+        GetComponent<NetworkObject>().Despawn(); //If I understand this correctly, Despawn destroys this game object and then sends a message to destroy this game object on all other clients connected? Is this server authoritative?
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision) 
     {
         if (collision.gameObject.tag == "Player")
         {
-            collision.gameObject.GetComponent<Player>().TakeDamage();
+            collision.gameObject.GetComponent<Player>().TakeDamage(); //I don't think this is server authoritative right now.
             DestroyProjectile();
         }
     }
