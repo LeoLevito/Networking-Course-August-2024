@@ -11,7 +11,10 @@ public class Projectile : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        projectileSpeed.Value = 1f;
+        if (IsServer)
+        {
+        projectileSpeed.Value = 1f; //Gives error Client is not allowed to write to this network variable.
+        }
     }
 
     // Update is called once per frame
@@ -36,7 +39,7 @@ public class Projectile : NetworkBehaviour
     {
         if (collision.gameObject.tag == "Player")
         {
-            collision.gameObject.GetComponent<Player>().TakeDamage(); //I don't think this is server authoritative right now.
+            collision.gameObject.GetComponent<Player>().TakeDamage(); //I don't think this is server authoritative right now. //Gives error Client is not allowed to write to this network variable.
             DestroyProjectile();
         }
     }

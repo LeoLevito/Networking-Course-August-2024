@@ -12,33 +12,8 @@ public class Player : NetworkBehaviour
     NetworkVariable<Vector2> moveInput = new NetworkVariable<Vector2>(); //will be replicated across the network. on every copy of an object. writePerm Owner allows owner to change varable.
     [SerializeField] GameObject objectToSpawn;
     [SerializeField] Transform objectSpawnPosition;
-
-    private int cameraZOffset = -50;
-    private float rotationSpeed;
-    private float acceleration;
-
-    private float lastRotation;
-    private float lastAcceleration;
-
-    private float thrust; //(space)
-    private float spin;
-    private Rigidbody2D rb2d;
-
-    private Camera mainCamera;
-
+    [SerializeField] Canvas canvas;
     NetworkVariable<float> health = new NetworkVariable<float>();
-    private void Awake()
-    {
-
-        health.OnValueChanged += NotifyUI;
-        rb2d = GetComponent<Rigidbody2D>();
-        mainCamera = Camera.main;
-    }
-
-    private void NotifyUI(float previousValue, float newValue)
-    {
-        
-    }
 
     private void Start()
     {
@@ -47,31 +22,13 @@ public class Player : NetworkBehaviour
         {
             inputReader.MoveEvent += OnMove;
             inputReader.ShootEvent += SpawnRPC;
-            inputReader.SendEvent += OnSend;
         }
-    }
-
-    //private void LateUpdate()
-    //{
-    //    if (IsLocalPlayer)
-    //    {
-    //        Vector3 currentPosition = transform.position;
-    //        currentPosition.z = cameraZOffset;
-    //        mainCamera.transform.position = currentPosition;
-    //    }
-    //}
-
-    public void OnSend()
-    {
-        Debug.Log("AA");
     }
 
     private void OnMove(Vector2 input)
     {
         MoveRPC(input);
     }
-
-
     
     private void Update()
     {
@@ -81,6 +38,8 @@ public class Player : NetworkBehaviour
       
         }
         transform.Rotate(transform.rotation.x, transform.rotation.y, moveInput.Value.x * 100 * -Time.deltaTime); //Wait I'm confused, why does this transfer to the server if it's not in the if-statement? Is it because of the moveInput variable? 
+        canvas.transform.position = objectSpawnPosition.transform.position;
+        canvas.transform.rotation = Quaternion.identity;
     }
 
     [Rpc(SendTo.Server)] //DECORATOR, MAY BE DECORATOR PATTERN!!!
@@ -103,15 +62,7 @@ public class Player : NetworkBehaviour
         health.Value -= 15f;
         if(health.Value <= 0)
         {
-            RespawnTest();
             GetComponent<NetworkObject>().Despawn();
         }
     }
-
-    IEnumerator RespawnTest()
-    {
-        yield return new WaitForSeconds(5);
-        Debug.Log("Man, debug.log is quite nice");
-        yield return null;
-    }// this has to be on the server, can't respawn if you're destroyed.
 }
