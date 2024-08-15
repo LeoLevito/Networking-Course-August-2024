@@ -13,20 +13,22 @@ public class Projectile : NetworkBehaviour
     {
         if (IsServer)
         {
-        projectileSpeed.Value = 1f; //Gives error Client is not allowed to write to this network variable.
+            projectileSpeed.Value = 1f; //Gives error Client is not allowed to write to this network variable.
         }
     }
 
     // Update is called once per frame
-    void Update()
+    void Update() //Update happens on both client and server if you don't specifically check for server or client
     {
-        destroyTimer -= Time.deltaTime;
-        if (destroyTimer <= 0)
+        if(IsServer)    //so this is only played on server
         {
-            DestroyProjectile();
+            destroyTimer -= Time.deltaTime;
+            if (destroyTimer <= 0)
+            {
+                DestroyProjectile();
+            }
         }
-
-        transform.position += transform.up * projectileSpeed.Value * 5 * Time.deltaTime;
+        transform.position += transform.up * projectileSpeed.Value * 5 * Time.deltaTime; //so this is played on both client and server
     }
 
     //[Rpc(SendTo.Server)]
@@ -37,10 +39,13 @@ public class Projectile : NetworkBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision) 
     {
-        if (collision.gameObject.tag == "Player")
+        if(IsServer && IsSpawned) 
         {
-            collision.gameObject.GetComponent<Player>().TakeDamage(); //I don't think this is server authoritative right now. //Gives error Client is not allowed to write to this network variable.
-            DestroyProjectile();
+            if (collision.gameObject.tag == "Player")
+            {
+                collision.gameObject.GetComponent<Player>().TakeDamage(); //I don't think this is server authoritative right now. //Gives error Client is not allowed to write to this network variable.
+                DestroyProjectile();
+            }
         }
     }
 }

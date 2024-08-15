@@ -47,6 +47,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   networkManager: {fileID: 7437743853079846229}
+  DropdownCanvas: {fileID: 2859575639505986968, guid: d4720e3e135b3e64dad416011e2261a4, type: 3}
+  go: {fileID: 0}
 --- !u!114 &7437743853079846229
 MonoBehaviour:
   m_ObjectHideFlags: 0

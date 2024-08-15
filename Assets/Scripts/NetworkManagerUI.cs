@@ -8,7 +8,8 @@ public class NetworkManagerUI : MonoBehaviour
 {
     [SerializeField] NetworkManager networkManager;
     [SerializeField] GameObject DropdownCanvas;
-    public GameObject go;
+
+    [HideInInspector] public GameObject go;
     private void OnGUI()
     {
         if (GUILayout.Button("Host"))
@@ -27,6 +28,8 @@ public class NetworkManagerUI : MonoBehaviour
         {
             Application.Quit();
         }
+
+        GUI.Label(new Rect(0, 100, 100, 100),(1 / Time.deltaTime).ToString("0") + " fps");
     }
 
     private void InstantiateDropdownCanvas()
@@ -35,5 +38,11 @@ public class NetworkManagerUI : MonoBehaviour
         {
             go = Instantiate(DropdownCanvas, Vector3.zero, Quaternion.identity);
         }
+    }
+
+    private void Start() //further latency reductions
+    {
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 300;
     }
 }

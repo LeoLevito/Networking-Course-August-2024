@@ -6,7 +6,6 @@ using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-//using static System.Net.Mime.MediaTypeNames;
 
 public class EmoticonUI : NetworkBehaviour
 {
@@ -16,11 +15,11 @@ public class EmoticonUI : NetworkBehaviour
     Dropdown dropdown;
     NetworkManagerUI networkManagerUI;
 
-    NetworkVariable<FixedString128Bytes> replicatedText = new NetworkVariable<FixedString128Bytes>();
-    
+    NetworkVariable<FixedString128Bytes> replicatedText = new NetworkVariable<FixedString128Bytes>("");
 
     void Start()
     {
+        emoticonText.text = replicatedText.Value.ToString(); 
         if (IsLocalPlayer)
         {
             networkManagerUI = FindObjectOfType<NetworkManagerUI>();
@@ -30,54 +29,25 @@ public class EmoticonUI : NetworkBehaviour
         }
         else
         {
-            emoticonText.text = replicatedText.Value.ToString();
-            
+            replicatedText.OnValueChanged += UpdateText;
         }
+    }
+
+    private void UpdateText(FixedString128Bytes previousValue, FixedString128Bytes newValue)
+    {
+        emoticonText.text = newValue.Value;
     }
 
     private void OnDropdownValueChanged()
     {
         emoticonText.text = dropdown.options[dropdown.value].text;
-
         FixedString128Bytes message = new(emoticonText.text);
         OnDropdownValueChangedRPC(message);
     }
+
     [Rpc(SendTo.Server)]
     private void OnDropdownValueChangedRPC(FixedString128Bytes data) //okay how to do this?
     {
-        OnDropdownValueReceivedRPC(data);
+        replicatedText.Value = data;
     }
-
-    [Rpc(SendTo.Everyone)]
-    private void OnDropdownValueReceivedRPC(FixedString128Bytes data) //okay how to do this?
-    {
-        if (!IsLocalPlayer)
-        {
-            emoticonText.text = data.ToString(); //IT FUCKING WORKS OMG!!! Only problem now is when you join it doesn't show anything on the host player...
-        }
-    }
-
-
-
-    //private void OnSend()
-    //{
-    //    //  string text = "Hello";
-    //    //  text.Length * 2; //check length and then adapt FixedString64Bytes or 128Bytes or similar. One char is apparently 2 bytes 
-    //    //  text.ToCharArray().Length; //or this. But it's easier to just limit input chat box to a specific amount of characters.
-
-    //    FixedString128Bytes message = new("Hello");
-    //    SubmitMessageRPC(message);
-    //}
-
-    //[Rpc(SendTo.Server)] //rpc has to be reference types and not variables
-    //public void SubmitMessageRPC(FixedString128Bytes message)
-    //{
-    //    UpdateMessageRPC(message);
-    //}
-
-    //[Rpc(SendTo.Everyone)]
-    //public void UpdateMessageRPC(FixedString128Bytes message)
-    //{
-    //    text.text = message.ToString();
-    //}
 }

@@ -290,10 +290,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3494129254385446425, guid: 270ef7be1f7234b4eb32e7c84d3510f2, type: 3}
-      propertyPath: DropdownCanvas
-      value: 
-      objectReference: {fileID: 2859575639505986968, guid: d4720e3e135b3e64dad416011e2261a4, type: 3}
     - target: {fileID: 6863146962417372206, guid: 270ef7be1f7234b4eb32e7c84d3510f2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

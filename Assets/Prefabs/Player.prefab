@@ -358,7 +358,7 @@ MonoBehaviour:
   inputReader: {fileID: 11400000, guid: f52784c81e22a394795c2cc4b68eb517, type: 2}
   objectToSpawn: {fileID: 958804463764770442, guid: 62b5533dc44ffce45a485cc925c9412a, type: 3}
   objectSpawnPosition: {fileID: 3264149426419033172}
-  canvas: {fileID: 278584159744949636}
+  emoticonCanvas: {fileID: 278584159744949636}
 --- !u!114 &1727138901330369195
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -440,7 +440,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
