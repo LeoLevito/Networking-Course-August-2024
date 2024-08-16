@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -8,19 +6,17 @@ public class Projectile : NetworkBehaviour
     float destroyTimer = 5;
     NetworkVariable<float> projectileSpeed = new NetworkVariable<float>();
 
-    // Start is called before the first frame update
     void Start()
     {
         if (IsServer)
         {
-            projectileSpeed.Value = 1f; //Gives error Client is not allowed to write to this network variable.
+            projectileSpeed.Value = 1f; //Used to give error "Client is not allowed to write to this network variable.", until I check for IsServer, which runs it only on the server instead of the client (and server).
         }
     }
 
-    // Update is called once per frame
-    void Update() //Update happens on both client and server if you don't specifically check for server or client
+    void Update() //Update happens on both client and server if you don't specifically check for server or client authority
     {
-        if(IsServer)    //so this is only played on server
+        if(IsServer)    //so this should only run on the server
         {
             destroyTimer -= Time.deltaTime;
             if (destroyTimer <= 0)
@@ -28,10 +24,9 @@ public class Projectile : NetworkBehaviour
                 DestroyProjectile();
             }
         }
-        transform.position += transform.up * projectileSpeed.Value * 5 * Time.deltaTime; //so this is played on both client and server
+        transform.position += transform.up * projectileSpeed.Value * 5 * Time.deltaTime; //so this is run on both the client and the server, if I've understood correcly.
     }
 
-    //[Rpc(SendTo.Server)]
     private void DestroyProjectile()
     {
         GetComponent<NetworkObject>().Despawn(); //If I understand this correctly, Despawn destroys this game object and then sends a message to destroy this game object on all other clients connected? Is this server authoritative?
@@ -43,7 +38,7 @@ public class Projectile : NetworkBehaviour
         {
             if (collision.gameObject.tag == "Player")
             {
-                collision.gameObject.GetComponent<Player>().TakeDamage(); //I don't think this is server authoritative right now. //Gives error Client is not allowed to write to this network variable.
+                collision.gameObject.GetComponent<Player>().TakeDamage();  //Used to give error "Client is not allowed to write to this network variable.", until I check for IsServer, which runs it only on the server instead of the client (and server).
                 DestroyProjectile();
             }
         }

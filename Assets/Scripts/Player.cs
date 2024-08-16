@@ -1,10 +1,5 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.Collections;
 using Unity.Netcode;
-using Unity.Netcode.Components;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,7 +7,7 @@ public class Player : NetworkBehaviour
 {
     [SerializeField] InputReader inputReader;
 
-    NetworkVariable<Vector2> moveInput = new NetworkVariable<Vector2>(); //will be replicated across the network. on every copy of an object. writePerm Owner allows owner to change varable.
+    NetworkVariable<Vector2> moveInput = new NetworkVariable<Vector2>(); //will be replicated across the network. on every copy of an object. writePerm Owner allows owner to change variable.
     [SerializeField] GameObject objectToSpawn;
     [SerializeField] Transform objectSpawnPosition;
     [SerializeField] Canvas emoticonCanvas;
@@ -21,7 +16,7 @@ public class Player : NetworkBehaviour
 
     private void Start()
     {
-        if (inputReader != null && IsLocalPlayer) //localplayer check prevents two clients trying to write to the same player or something. Can also check if server and whatnot.
+        if (inputReader != null && IsLocalPlayer) //localplayer check prevents two clients trying to write to the replicated player. Or something.
         {
             inputReader.MoveEvent += OnMove;
             inputReader.ShootEvent += SpawnRPC;
@@ -43,12 +38,12 @@ public class Player : NetworkBehaviour
             {
                 transform.position += transform.up * moveInput.Value.y * Time.deltaTime; //not sure if deltaTime can differ between client and server and if that has an effect on latency.
             }
-            transform.Rotate(transform.rotation.x, transform.rotation.y, moveInput.Value.x * 100 * -Time.deltaTime); //Wait I'm confused, why does this transfer to the server if it's not in the if-statement? Is it because of the moveInput variable? 
-            emoticonCanvas.transform.position = objectSpawnPosition.transform.position;
-        }
+            transform.Rotate(transform.rotation.x, transform.rotation.y, moveInput.Value.x * 100 * -Time.deltaTime); //Wait I'm confused, why does this transfer to the server if it's not in the if-IsServer check? 
+            emoticonCanvas.transform.position = objectSpawnPosition.transform.position;                              //Is it because of the moveInput variable? 
+        }                                                                                                            //Edit: Nope, it's just because it doesn't have any authoritative checks, so it just runs on both the client and the server.
     }
 
-    [Rpc(SendTo.Server)] //DECORATOR, MAY BE DECORATOR PATTERN!!!
+    [Rpc(SendTo.Server)] //Decorator
     private void SpawnRPC()
     {
         NetworkObject ob = Instantiate(objectToSpawn).GetComponent<NetworkObject>();
@@ -57,7 +52,7 @@ public class Player : NetworkBehaviour
         ob.Spawn(true);
     }
 
-    [Rpc(SendTo.Server)] //DECORATOR, MAY BE DECORATOR PATTERN!!!
+    [Rpc(SendTo.Server)] //Decorator
     private void MoveRPC(Vector2 data)
     {
         moveInput.Value = data;
@@ -75,7 +70,7 @@ public class Player : NetworkBehaviour
         }
     }
 
-    [Rpc(SendTo.Everyone)]
+    [Rpc(SendTo.Everyone)] //Decorator
     private void HidePlayerRPC(bool state)
     {
         foreach (SpriteRenderer renderer in GetComponentsInChildren<SpriteRenderer>())
@@ -94,7 +89,7 @@ public class Player : NetworkBehaviour
         isDead = false;
     }
 
-    new private void OnDestroy()
+    new private void OnDestroy() //in the case of a player disconnecting from the server, destroy the loose EmoticonCanvas game object so it doesn't stay the the scene.
     {
         Destroy(emoticonCanvas.gameObject);
     }

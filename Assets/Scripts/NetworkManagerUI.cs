@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class NetworkManagerUI : MonoBehaviour
@@ -29,10 +26,10 @@ public class NetworkManagerUI : MonoBehaviour
             Application.Quit();
         }
 
-        GUI.Label(new Rect(0, 100, 100, 100),(1 / Time.deltaTime).ToString("0") + " fps");
+        GUI.Label(new Rect(0, 100, 100, 100),(1 / Time.deltaTime).ToString("0") + " fps"); //Show fps
     }
 
-    private void InstantiateDropdownCanvas()
+    private void InstantiateDropdownCanvas() //instantiate dropdown menu for local player.
     {
         if (go == null)
         {
